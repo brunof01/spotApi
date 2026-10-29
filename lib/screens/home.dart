@@ -35,6 +35,44 @@ class _MyHomePageState extends State<MyHomePage> {
     if (saved == true) _reload();
   }
 
+  Future<void> _confirmDelete(ParkingSpot spot) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir vaga'),
+        content: Text(
+          'Deseja excluir a vaga ${spot.parkingSpotNumber} '
+              '(placa ${spot.licensePlateCar})?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await _controller.delete(spot.id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vaga excluída.')),
+      );
+      _reload();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao excluir: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         '${spot.responsibleName} - Apto ${spot.apartment}, Bloco ${spot.block}',
                   ),
                   isThreeLine: true,
+                  trailing: IconButton(
+                    onPressed: () => _confirmDelete(spot),
+                    tooltip: 'Excluir vaga',
+                    icon: const Icon(Icons.delete_outline),
+                  ),
                 ),
               );
             },

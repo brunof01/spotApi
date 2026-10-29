@@ -40,4 +40,14 @@ class ParkingSpotService {
       throw Exception('Falhou ao cadastrar');
     }
   }
+
+  Future<void> deleteParkingSpot(String id) async {
+    _response = await http.delete(
+      Uri.parse('$url/$id'),
+      headers: {'Accept': 'application/json'},
+    );
+    if (_response.statusCode != 200 && _response.statusCode != 204) {
+      throw Exception('Falhou ao excluir');
+    }
+  }
 }

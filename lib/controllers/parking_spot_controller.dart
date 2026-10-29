@@ -11,4 +11,8 @@ class ParkingSpotController {
   Future<ParkingSpot> create(ParkingSpot spot) {
     return _service.createParkingSpot(spot);
   }
+
+  Future<void> delete(String id) {
+    return _service.deleteParkingSpot(id);
+  }
 }
